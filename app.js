@@ -8,7 +8,11 @@ const {
 } = process.env;
 const app = express();
 
+app.use(express.json());
+
 mongoose.connect(PATHDB, {});
+
+app.use('/', require('./routes/index'));
 
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);
