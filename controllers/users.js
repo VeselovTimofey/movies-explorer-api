@@ -45,6 +45,20 @@ const login = (req, res, next) => {
     .catch((err) => next(new Unauthorized(err.message)));
 };
 
+const logout = (req, res, next) => {
+  const { cookie } = req.headers;
+
+  try {
+    if (!cookie) {
+      throw new Unauthorized('Необходима авторизация.');
+    }
+  } catch (err) {
+    next(err);
+  }
+
+  res.clearCookie('jwt').send();
+};
+
 module.exports = {
-  createUser, login,
+  createUser, login, logout,
 };
