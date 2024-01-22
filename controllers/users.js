@@ -5,6 +5,7 @@ const User = require('../models/user');
 const BadRequest = require('../errors/bad_request');
 const Conflict = require('../errors/conflict');
 const Unauthorized = require('../errors/unauthorized');
+const NotFound = require('../errors/not_found');
 
 const createUser = (req, res, next) => {
   const {
@@ -45,20 +46,42 @@ const login = (req, res, next) => {
     .catch((err) => next(new Unauthorized(err.message)));
 };
 
-const logout = (req, res, next) => {
-  const { cookie } = req.headers;
-
-  try {
-    if (!cookie) {
-      throw new Unauthorized('Необходима авторизация.');
-    }
-  } catch (err) {
-    next(err);
-  }
-
+const logout = (req, res) => {
   res.clearCookie('jwt').send();
 };
 
+const getMe = (req, res, next) => {
+  const { _id } = req.user;
+  User.findById(_id).orFail()
+    .then((user) => {
+      if (user) {
+        res.send({ data: user });
+      }
+    })
+    .catch((err) => {
+      if (err instanceof mongoose.Error.DocumentNotFoundError) {
+        next(new NotFound('Запрашиваемый пользователь не найден.'));
+      } else {
+        next(err);
+      }
+    });
+};
+
+const updateUser = (req, res, next) => {
+  const { email, name } = req.body;
+  User.findByIdAndUpdate(req.user._id, { name, email }, { new: true, runValidators: true })
+    .then((user) => {
+      res.send({ data: user });
+    })
+    .catch((err) => {
+      if (err instanceof mongoose.Error.DocumentNotFoundError) {
+        next(new NotFound('Запрашиваемый пользователь не найден.'));
+      } else {
+        next(err);
+      }
+    });
+};
+
 module.exports = {
-  createUser, login, logout,
+  createUser, login, logout, getMe, updateUser,
 };
