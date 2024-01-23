@@ -51,12 +51,12 @@ const createMovie = (req, res, next) => {
 };
 
 const deleteMovie = (req, res, next) => {
-  Movie.findById(req.params.cardId).orFail()
+  Movie.findById(req.params.movieId).orFail()
     .then((movie) => {
       if (req.user._id !== movie.owner._id.valueOf()) {
         throw new Forbidden('Нельзя удалять чужую карточку.');
       }
-      Movie.findByIdAndDelete(req.params.cardId).orFail()
+      Movie.findByIdAndDelete(req.params.movieId).orFail()
         .then((oldMovie) => {
           if (oldMovie) {
             res.send({ data: oldMovie });

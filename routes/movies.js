@@ -20,7 +20,7 @@ routerMovie.post('/', celebrate({
 }), createMovie);
 routerMovie.delete('/:movieId', celebrate({
   params: Joi.object().keys({
-    cardId: Joi.string().alphanum().length(24),
+    movieId: Joi.string().alphanum().length(24),
   }),
 }), deleteMovie);
 

@@ -1,6 +1,8 @@
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
+const { errors } = require('celebrate');
+const myError = require('./middlewares/error');
 
 const {
   PATHDB = 'mongodb://127.0.0.1:27017/bitfilmsdb',
@@ -13,6 +15,9 @@ app.use(express.json());
 mongoose.connect(PATHDB, {});
 
 app.use('/', require('./routes/index'));
+
+app.use(errors());
+app.use(myError);
 
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);
