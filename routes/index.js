@@ -19,5 +19,6 @@ router.post('/signup', celebrate({
 router.post('/signout', auth, logout);
 
 router.use('/users', auth, require('./users'));
+router.use('/movies', auth, require('./movies'));
 
 module.exports = router;
