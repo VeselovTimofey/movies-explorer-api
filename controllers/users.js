@@ -11,6 +11,7 @@ const {
   NotFoundUserMessage,
   UnauthorizedMessage,
   BadRequestMessage,
+  ConflictUserMessage,
   MongoServerErrorName,
   MongoServerErrorCode,
 } = require('../errors/const');
@@ -38,7 +39,7 @@ const createUser = (req, res, next) => {
       if (err instanceof mongoose.Error.ValidationError) {
         next(new BadRequest(BadRequestMessage + err.message));
       } else if (err.name === MongoServerErrorName && err.code === MongoServerErrorCode) {
-        next(new Conflict(err.message));
+        next(new Conflict(ConflictUserMessage));
       } else {
         next(err);
       }
@@ -84,6 +85,8 @@ const updateUser = (req, res, next) => {
     .catch((err) => {
       if (err instanceof mongoose.Error.DocumentNotFoundError) {
         next(new NotFound(NotFoundUserMessage));
+      } else if (err.name === MongoServerErrorName && err.code === MongoServerErrorCode) {
+        next(new Conflict(ConflictUserMessage));
       } else {
         next(err);
       }
