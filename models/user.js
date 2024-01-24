@@ -2,10 +2,12 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-const {
-  NODE_ENV,
-  JWT_SECRET,
-} = process.env;
+const Unauthorized = require('../errors/unauthorized');
+
+const { UnauthorizedMessage } = require('../errors/const');
+const { DEV_JWT_SECRET } = require('../conf');
+
+const { NODE_ENV, JWT_SECRET } = process.env;
 
 const userSchema = new mongoose.Schema({
   email: {
@@ -30,16 +32,16 @@ userSchema.statics.findUserByCredentials = function findUserByCredentials(email,
   return this.findOne({ email }).select('+password')
     .then((user) => {
       if (!user) {
-        return Promise.reject(new Error('Неправильные почта или пароль'));
+        return Promise.reject(new Unauthorized(UnauthorizedMessage));
       }
       return bcrypt.compare(password, user.password)
         .then((matched) => {
           if (!matched) {
-            return Promise.reject(new Error('Неправильные почта или пароль'));
+            return Promise.reject(new Unauthorized(UnauthorizedMessage));
           }
           const token = jwt.sign(
             { _id: user._id },
-            NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
+            NODE_ENV === 'production' ? JWT_SECRET : DEV_JWT_SECRET,
             { expiresIn: '7d' },
           );
           return token;

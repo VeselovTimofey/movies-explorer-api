@@ -4,16 +4,15 @@ const mongoose = require('mongoose');
 const { errors } = require('celebrate');
 const myError = require('./middlewares/error');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
+const { DEV_PATHDB, PORT } = require('./conf');
 
-const {
-  PATHDB = 'mongodb://127.0.0.1:27017/bitfilmsdb',
-  PORT = 3000,
-} = process.env;
+const { NODE_ENV, PATHDB } = process.env;
+
 const app = express();
 
 app.use(express.json());
 
-mongoose.connect(PATHDB, {});
+mongoose.connect(NODE_ENV === 'production' ? PATHDB : DEV_PATHDB, {});
 
 app.use(requestLogger);
 

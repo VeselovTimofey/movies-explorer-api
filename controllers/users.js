@@ -7,6 +7,14 @@ const Conflict = require('../errors/conflict');
 const Unauthorized = require('../errors/unauthorized');
 const NotFound = require('../errors/not_found');
 
+const {
+  NotFoundUserMessage,
+  UnauthorizedMessage,
+  BadRequestMessage,
+  MongoServerErrorName,
+  MongoServerErrorCode,
+} = require('../errors/const');
+
 const createUser = (req, res, next) => {
   const {
     name, email, password,
@@ -28,9 +36,9 @@ const createUser = (req, res, next) => {
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        next(new BadRequest());
-      } else if (err.name === 'MongoServerError' && err.code === 11000) {
-        next(new Conflict());
+        next(new BadRequest(BadRequestMessage + err.message));
+      } else if (err.name === MongoServerErrorName && err.code === MongoServerErrorCode) {
+        next(new Conflict(err.message));
       } else {
         next(err);
       }
@@ -43,7 +51,7 @@ const login = (req, res, next) => {
     .then((token) => {
       res.cookie('jwt', token, { maxAge: 3600000 * 24 * 7, httpOnly: true }).send({ email: req.body.email });
     })
-    .catch((err) => next(new Unauthorized(err.message)));
+    .catch(() => next(new Unauthorized(UnauthorizedMessage)));
 };
 
 const logout = (req, res) => {
@@ -60,7 +68,7 @@ const getMe = (req, res, next) => {
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.DocumentNotFoundError) {
-        next(new NotFound('Запрашиваемый пользователь не найден.'));
+        next(new NotFound(NotFoundUserMessage));
       } else {
         next(err);
       }
@@ -75,7 +83,7 @@ const updateUser = (req, res, next) => {
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.DocumentNotFoundError) {
-        next(new NotFound('Запрашиваемый пользователь не найден.'));
+        next(new NotFound(NotFoundUserMessage));
       } else {
         next(err);
       }
