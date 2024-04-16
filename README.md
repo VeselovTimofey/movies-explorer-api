@@ -1,10 +1,27 @@
-# movies-explorer-api
+# Проект: movies-explorer
 
-Репозиторий для api части дипломного проекта.
+### Описание
 
-Адрес репозитория: https://github.com/VeselovTimofey/movies-explorer-api/tree/level-1
+Backend часть приложения поиска информации о фильмах. Функционал регистрация и редактирование профиля, поиск фильмов, добавление фильма в избранное. 
 
-## Ссылки на проект
-IP 62.84.127.66
+[Сервер](https://api.veselov.diplom.nomoredomainsmonster.ru/)
 
-Backend https://api.veselov.diplom.nomoredomainsmonster.ru/
+### Технологии
+
+* JavaScript
+* Node.js
+* MongoDB
+* Nginx
+
+### Запуск проекта
+
+Установите пакеты ``` npm install ``` <br />
+Запустите сервер ``` npm run start ```
+
+### Статус
+Основной функционал завершён. 
+В ближайшее время объединю данный репозиторий с frontend репозиторием и создам docker контейнер данного приложения.
+
+### Автор
+Veselov Timofey <br />
+vestimofey@mail.ru
