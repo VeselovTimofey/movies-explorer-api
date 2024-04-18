@@ -5,6 +5,6 @@ const validationDeleteMovie = require('../validations/delete_movie');
 
 routerMovie.get('/', getMovies);
 routerMovie.post('/', validationPostMovie, createMovie);
-routerMovie.delete('/:movieId', validationDeleteMovie, deleteMovie);
+routerMovie.delete('/', validationDeleteMovie, deleteMovie);
 
 module.exports = routerMovie;

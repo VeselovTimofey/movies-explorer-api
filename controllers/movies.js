@@ -1,10 +1,9 @@
 const mongoose = require('mongoose');
 const Movie = require('../models/movie');
 const BadRequest = require('../errors/bad_request');
-const Forbidden = require('../errors/forbidden');
 const NotFound = require('../errors/not_found');
 
-const { BadRequestMessage, SomeOneElseMovieMessage, NotFoundMovieMessage } = require('../errors/const');
+const { BadRequestMessage, NotFoundMovieMessage } = require('../errors/const');
 
 const getMovies = (req, res, next) => {
   Movie.find({ owner: req.user._id })
@@ -53,15 +52,13 @@ const createMovie = (req, res, next) => {
 };
 
 const deleteMovie = (req, res, next) => {
-  Movie.findById(req.params.movieId).orFail()
+  const { movieId, owner } = req.body;
+  Movie.find({ movieId, owner }).orFail()
     .then((movie) => {
-      if (req.user._id !== movie.owner._id.valueOf()) {
-        throw new Forbidden(SomeOneElseMovieMessage);
-      }
-      Movie.findByIdAndDelete(req.params.movieId).orFail()
+      Movie.deleteOne({ movieId, owner }).orFail()
         .then((oldMovie) => {
           if (oldMovie) {
-            res.send({ data: oldMovie });
+            res.send({ data: movie });
           }
         })
         .catch((err) => {
