@@ -6,6 +6,7 @@ const helmet = require('helmet');
 const myError = require('./middlewares/error');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const limiter = require('./middlewares/rate_limit');
+const checkCORS = require('./middlewares/CORSAllowed');
 const { DEV_PATHDB, PORT } = require('./conf');
 
 const { NODE_ENV, PATHDB } = process.env;
@@ -13,6 +14,7 @@ const { NODE_ENV, PATHDB } = process.env;
 const app = express();
 
 app.use(express.json());
+app.use(checkCORS);
 app.use(helmet());
 app.use(limiter);
 
